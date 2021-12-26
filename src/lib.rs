@@ -1,0 +1,217 @@
+// use justify::{justify as justifi, Settings};
+mod helper_functions;
+
+use helper_functions::get_evenly_seleted_indices;
+use regex::Regex;
+use std::fmt;
+
+trait TextAlign {
+    fn center_align(&self, width: usize) -> String;
+    fn left_align(&self) -> String;
+    fn right_align(&self, width: usize) -> String;
+    fn justify(&self, width: usize) -> String;
+    fn dejustify(&self, spaces_after_punctuation: usize) -> String;
+}
+
+// TODO: Any way to make this return either `&str` or `String`?
+impl<T: AsRef<str> + fmt::Display> TextAlign for T {
+    fn center_align(&self, width: usize) -> String {
+        align(&self, width, 2)
+    }
+
+    // Because left alignment will only ever shorten the length of a line, we dont need to worry
+    // about staying within a width, so we don't even consider it
+    fn left_align(&self) -> String {
+        self.as_ref().trim_start().to_string()
+    }
+
+    fn right_align(&self, width: usize) -> String {
+        align(&self, width, 1)
+    }
+
+    fn justify(&self, width: usize) -> String {
+        let str_ref = self.as_ref();
+
+        if width <= str_ref.len() {
+            return self.to_string();
+        }
+
+        let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
+        let length_of_words: usize = words.iter().map(|word| word.len()).sum();
+        let spaces_required = width - length_of_words;
+        let space_blocks_required = words.len() - 1;
+        let spaces_per_block = spaces_required / space_blocks_required;
+        let remaining_spaces = spaces_required % space_blocks_required;
+
+        // dbg!(&words);
+        // dbg!(&length_of_words);
+        // dbg!(&spaces_required);
+        // dbg!(&space_blocks_required);
+        // dbg!(&spaces_per_block);
+        // dbg!(&remaining_spaces);
+
+        let mut space_counts = vec![spaces_per_block; space_blocks_required];
+        let indices_to_increment = get_evenly_seleted_indices(space_counts.len(), remaining_spaces);
+
+        // for index in indices_to_increment {
+        //     space_counts[index] += 1
+        // }
+
+        // We must have an equal number of words and space blocks to prevent zip() from
+        // short-circuiting
+        // We currently have 1 less space block
+        // We can push a 0 to the end, which will ultimately result in the last word having an empty
+        // string appended to it
+        space_counts.push(0);
+        assert_eq!(words.len(), space_counts.len());
+
+        let text: String = words
+            .iter()
+            .zip(space_counts.iter())
+            .map(|(word, space_count)| format!("{}{}", word, " ".repeat(*space_count)))
+            .collect::<Vec<String>>()
+            .join("");
+
+        text
+    }
+
+    // TODO: Gross and probably inefficient
+    fn dejustify(&self, spaces_after_punctuation: usize) -> String {
+        // Normalize all space groupings in between words to a single space
+        let mut text = replace_matches(&self, "[' ']{2,}", " ");
+
+        if spaces_after_punctuation > 1 {
+            let padding_string = " ".repeat(spaces_after_punctuation);
+
+            let regular_expressions_and_replacements = [
+                (r"\.[' ']", format!(".{}", padding_string)),
+                (r"\?[' ']", format!("?{}", padding_string)),
+                (r"![' ']", format!("!{}", padding_string)),
+            ];
+
+            // Adjust (the now) single spaces after punctuation to be whatever the user requests
+            for (regular_expression, replacement) in regular_expressions_and_replacements {
+                text = replace_matches(&text, regular_expression, &replacement);
+            }
+        }
+
+        text
+    }
+}
+
+fn align<T: AsRef<str> + fmt::Display>(
+    text: &T,
+    width: usize,
+    padding_division_value: usize,
+) -> String {
+    let text_length = text.as_ref().len();
+
+    if width <= text_length {
+        return text.to_string();
+    }
+
+    let padding_length = (width - text_length) / padding_division_value;
+    let padding_string = " ".repeat(padding_length);
+
+    format!("{}{}", padding_string, text)
+}
+
+fn replace_matches<T: AsRef<str> + fmt::Display>(
+    text: &T,
+    regular_expression: &str,
+    replacement: &str,
+) -> String {
+    Regex::new(regular_expression)
+        .unwrap()
+        .replace_all(text.as_ref(), replacement)
+        .to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_center_align_even_length_text() {
+        assert_eq!("hi".center_align(3), "hi");
+        assert_eq!("hi".center_align(5), " hi");
+        assert_eq!("hi".center_align(8), "   hi");
+
+        assert_eq!("hi\n".center_align(3), "hi\n");
+        assert_eq!("hi\n".center_align(5), " hi\n");
+        assert_eq!("hi\n".center_align(8), "  hi\n");
+    }
+
+    #[test]
+    fn test_center_align_even_length_text_with_newlines() {
+        assert_eq!("hi\n".center_align(3), "hi\n");
+        assert_eq!("hi\n".center_align(5), " hi\n");
+        assert_eq!("hi\n".center_align(8), "  hi\n");
+    }
+
+    #[test]
+    fn test_center_align_odd_length_text() {
+        assert_eq!("doggy".center_align(3), "doggy");
+        assert_eq!("doggy".center_align(8), " doggy");
+        assert_eq!("doggy".center_align(9), "  doggy");
+    }
+
+    #[test]
+    fn test_right_align() {
+        assert_eq!("hi".right_align(1), "hi");
+        assert_eq!("hi".right_align(3), " hi");
+        assert_eq!("hi".right_align(5), "   hi");
+    }
+
+    #[test]
+    fn test_left_align() {
+        assert_eq!("hi".left_align(), "hi");
+        assert_eq!(" hi".left_align(), "hi");
+    }
+
+    #[test]
+    fn test_justify_sentence() {
+        assert_eq!("Good dog".justify(1), "Good dog");
+        assert_eq!("Good dog".justify(8), "Good dog");
+        assert_eq!("Good dog".justify(9), "Good  dog");
+        assert_eq!("Good dog".justify(10), "Good   dog");
+        // assert_eq!("Really good dog".justify(16), "Really  good dog");
+        // assert_eq!("Really good dog".justify(17), "Really  good  dog");
+        // assert_eq!("Really good dog".justify(18), "Really   good  dog");
+    }
+
+    #[test]
+    fn test_justify_sentence_with_newlines() {
+        assert_eq!("Good dog\n".justify(1), "Good dog\n");
+        assert_eq!("Good dog\n".justify(8), "Good dog\n");
+        assert_eq!("Good dog\n".justify(9), "Good  dog\n");
+        assert_eq!("Good dog\n".justify(10), "Good   dog\n");
+        // assert_eq!("Really good dog".justify(16), "Really  good dog");
+        // assert_eq!("Really good dog".justify(17), "Really  good  dog");
+        // assert_eq!("Really good dog".justify(18), "Really   good  dog");
+    }
+
+    #[test]
+    fn test_dejustify() {
+        assert_eq!(
+            "Hi    bud.    How    are    you?".dejustify(1),
+            "Hi bud. How are you?"
+        );
+        assert_eq!(
+            "Hi    bud.    How    are    you?".dejustify(2),
+            "Hi bud.  How are you?"
+        );
+        assert_eq!(
+            "Hi!    Hey?    Hello.    Bud.".dejustify(2),
+            "Hi!  Hey?  Hello.  Bud."
+        );
+        assert_eq!(
+            "Hi!    Hey?\nHello.    Bud.".dejustify(1),
+            "Hi! Hey?\nHello. Bud."
+        );
+    }
+}
+
+// May want an Align enum, and then a single align function that takes in that enum and all of the
+// lines at once, then iterates over them and doing the correct thing in a match
+// Tests with newlines at the end?
