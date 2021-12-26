@@ -269,5 +269,3 @@ mod tests {
         );
     }
 }
-
-// TODO: Add tests for including whitespace, refactor that funtion again
