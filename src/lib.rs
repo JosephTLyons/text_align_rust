@@ -4,7 +4,7 @@ use helper_functions::get_evenly_seleted_indices;
 use regex::Regex;
 use std::fmt;
 
-trait TextAlign {
+pub trait TextAlign {
     fn center_align(&self, width: usize) -> String;
     fn left_align(&self) -> String;
     fn right_align(&self, width: usize) -> String;
