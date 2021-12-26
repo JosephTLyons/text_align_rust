@@ -17,7 +17,7 @@ fn main() {
     );
 
     assert_eq!(
-        "Hello my dearest friend!".center_align(50),
+        "Hello my dearest friend!".center_align(50, false),
         "             Hello my dearest friend!"
     );
 

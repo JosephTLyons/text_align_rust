@@ -4,7 +4,7 @@ use helper_functions::{get_evenly_seleted_indices, replace_matches};
 use std::fmt;
 
 pub trait TextAlign {
-    fn center_align(&self, width: usize) -> String;
+    fn center_align(&self, width: usize, should_include_trailing_whitespace: bool) -> String;
     fn left_align(&self) -> String;
     fn right_align(&self, width: usize) -> String;
     // fn justify(&self, width: usize) -> String;
@@ -13,8 +13,38 @@ pub trait TextAlign {
 
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
-    fn center_align(&self, width: usize) -> String {
-        align(&self, width, 2)
+    fn center_align(&self, mut width: usize, should_include_trailing_whitespace: bool) -> String {
+        let str_ref = self.as_ref();
+        let text_length = str_ref.len();
+        let has_newline = str_ref.ends_with("\n");
+        let str_ref = str_ref.trim_end();
+
+        if has_newline {
+            width += 1;
+        }
+
+        if width <= text_length {
+            return self.to_string();
+        }
+
+        let spaces = width - text_length;
+        let left_padding_length = spaces / 2;
+
+        let right_padding_length = if should_include_trailing_whitespace {
+            spaces - left_padding_length
+        } else {
+            0
+        };
+
+        let last_character = if has_newline { "\n" } else { "" };
+
+        format!(
+            "{}{}{}{}",
+            " ".repeat(left_padding_length),
+            str_ref,
+            " ".repeat(right_padding_length),
+            last_character
+        )
     }
 
     // Because left alignment will only ever shorten the length of a line, we dont need to worry
@@ -23,8 +53,22 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         self.as_ref().trim_start().to_string()
     }
 
-    fn right_align(&self, width: usize) -> String {
-        align(&self, width, 1)
+    fn right_align(&self, mut width: usize) -> String {
+        let str_ref = self.as_ref();
+        let text_length = str_ref.len();
+
+        if str_ref.ends_with("\n") {
+            width += 1;
+        }
+
+        if width <= text_length {
+            return self.to_string();
+        }
+
+        let padding_length = width - text_length;
+        let padding_string = " ".repeat(padding_length);
+
+        format!("{}{}", padding_string, self)
     }
 
     // fn justify(&self, width: usize) -> String {
@@ -97,52 +141,50 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     }
 }
 
-fn align<T: AsRef<str> + fmt::Display>(
-    text: &T,
-    mut width: usize,
-    padding_division_value: usize,
-) -> String {
-    let str_ref = text.as_ref();
-    let text_length = str_ref.len();
-
-    if str_ref.ends_with("\n") {
-        width += 1;
-    }
-
-    if width <= text_length {
-        return text.to_string();
-    }
-
-    let padding_length = (width - text_length) / padding_division_value;
-    let padding_string = " ".repeat(padding_length);
-
-    format!("{}{}", padding_string, text)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_center_align_even_length_text() {
-        assert_eq!("hi".center_align(3), "hi");
-        assert_eq!("hi".center_align(5), " hi");
-        assert_eq!("hi".center_align(8), "   hi");
+        assert_eq!("hi".center_align(3, false), "hi");
+        assert_eq!("hi".center_align(3, true), "hi ");
 
-        assert_eq!("hi\n".center_align(3), "hi\n");
-        assert_eq!("hi\n".center_align(5), " hi\n");
-        assert_eq!("hi\n".center_align(8), "   hi\n");
+        assert_eq!("hi".center_align(5, false), " hi");
+        assert_eq!("hi".center_align(5, true), " hi  ");
+
+        assert_eq!("hi".center_align(8, false), "   hi");
+        assert_eq!("hi".center_align(8, true), "   hi   ");
+
+        assert_eq!("hi\n".center_align(3, false), "hi\n");
+        assert_eq!("hi\n".center_align(3, true), "hi \n");
+
+        assert_eq!("hi\n".center_align(5, false), " hi\n");
+        assert_eq!("hi\n".center_align(5, true), " hi  \n");
+
+        assert_eq!("hi\n".center_align(8, false), "   hi\n");
+        assert_eq!("hi\n".center_align(8, true), "   hi   \n");
     }
 
     #[test]
     fn test_center_align_odd_length_text() {
-        assert_eq!("doggy".center_align(3), "doggy");
-        assert_eq!("doggy".center_align(8), " doggy");
-        assert_eq!("doggy".center_align(9), "  doggy");
+        assert_eq!("doggy".center_align(3, false), "doggy");
+        assert_eq!("doggy".center_align(3, true), "doggy");
 
-        assert_eq!("doggy\n".center_align(3), "doggy\n");
-        assert_eq!("doggy\n".center_align(8), " doggy\n");
-        assert_eq!("doggy\n".center_align(9), "  doggy\n");
+        assert_eq!("doggy".center_align(8, false), " doggy");
+        assert_eq!("doggy".center_align(8, true), " doggy  ");
+
+        assert_eq!("doggy".center_align(9, false), "  doggy");
+        assert_eq!("doggy".center_align(9, true), "  doggy  ");
+
+        assert_eq!("doggy\n".center_align(3, false), "doggy\n");
+        assert_eq!("doggy\n".center_align(3, true), "doggy\n");
+
+        assert_eq!("doggy\n".center_align(8, false), " doggy\n");
+        assert_eq!("doggy\n".center_align(8, true), " doggy  \n");
+
+        assert_eq!("doggy\n".center_align(9, false), "  doggy\n");
+        assert_eq!("doggy\n".center_align(9, true), "  doggy  \n");
     }
 
     #[test]
@@ -221,3 +263,5 @@ mod tests {
         );
     }
 }
+
+// TODO: Add tests for including whitespace, refactor that funtion again
