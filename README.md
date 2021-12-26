@@ -1,6 +1,6 @@
 # text_align
 
-A crate that provides a single trait for various alignments of text
+[A Rust crate that provides a single trait for various alignments of text](https://crates.io/crates/text_align)
 
 ```rust
 use text_align::TextAlign;
