@@ -1,4 +1,3 @@
-// use justify::{justify as justifi, Settings};
 mod helper_functions;
 
 use helper_functions::get_evenly_seleted_indices;
