@@ -1,6 +1,6 @@
 mod helper_functions;
 
-use helper_functions::{get_evenly_seleted_indices, replace_matches};
+use helper_functions::{get_index_spread, replace_matches};
 use std::fmt;
 
 pub trait TextAlign {
@@ -85,19 +85,13 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         let spaces_per_block = spaces_required / space_blocks_required;
         let remaining_spaces = spaces_required % space_blocks_required;
 
-        // dbg!(&words);
-        // dbg!(&length_of_words);
-        // dbg!(&spaces_required);
-        // dbg!(&space_blocks_required);
-        // dbg!(&spaces_per_block);
-        // dbg!(&remaining_spaces);
-
         let mut space_counts = vec![spaces_per_block; space_blocks_required];
-        let indices_to_increment = get_evenly_seleted_indices(space_counts.len(), remaining_spaces);
 
-        // for index in indices_to_increment {
-        //     space_counts[index] += 1
-        // }
+        if let Some(indices) = get_index_spread(space_counts.len(), remaining_spaces) {
+            for index in indices {
+                space_counts[index] += 1
+            }
+        }
 
         // We must have an equal number of words and space blocks to prevent zip() from
         // short-circuiting
