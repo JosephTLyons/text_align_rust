@@ -3,7 +3,7 @@ name = "text_align"
 version = "0.1.1"
 authors = ["Joseph T Lyons <JosephTLyons@gmail.com>"]
 edition = "2021"
-description = "A crate that provides a single trait that for various alignments of text"
+description = "A crate that provides a single trait for various alignments of text"
 license = "GPL-3.0-only"
 repository = "https://github.com/JosephTLyons/text_align_rust"
 
