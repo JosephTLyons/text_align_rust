@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## December 25, 2021 - v0.1.1
+## December 26, 2021 - v0.1.1
 
 - Make TextAlign trait public
 - Small cleanup
