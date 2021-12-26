@@ -99,10 +99,15 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
 
 fn align<T: AsRef<str> + fmt::Display>(
     text: &T,
-    width: usize,
+    mut width: usize,
     padding_division_value: usize,
 ) -> String {
-    let text_length = text.as_ref().len();
+    let str_ref = text.as_ref();
+    let text_length = str_ref.len();
+
+    if str_ref.ends_with("\n") {
+        width += 1;
+    }
 
     if width <= text_length {
         return text.to_string();
@@ -126,14 +131,7 @@ mod tests {
 
         assert_eq!("hi\n".center_align(3), "hi\n");
         assert_eq!("hi\n".center_align(5), " hi\n");
-        assert_eq!("hi\n".center_align(8), "  hi\n");
-    }
-
-    #[test]
-    fn test_center_align_even_length_text_with_newlines() {
-        assert_eq!("hi\n".center_align(3), "hi\n");
-        assert_eq!("hi\n".center_align(5), " hi\n");
-        assert_eq!("hi\n".center_align(8), "  hi\n");
+        assert_eq!("hi\n".center_align(8), "   hi\n");
     }
 
     #[test]
@@ -141,6 +139,10 @@ mod tests {
         assert_eq!("doggy".center_align(3), "doggy");
         assert_eq!("doggy".center_align(8), " doggy");
         assert_eq!("doggy".center_align(9), "  doggy");
+
+        assert_eq!("doggy\n".center_align(3), "doggy\n");
+        assert_eq!("doggy\n".center_align(8), " doggy\n");
+        assert_eq!("doggy\n".center_align(9), "  doggy\n");
     }
 
     #[test]
@@ -148,12 +150,19 @@ mod tests {
         assert_eq!("hi".right_align(1), "hi");
         assert_eq!("hi".right_align(3), " hi");
         assert_eq!("hi".right_align(5), "   hi");
+
+        assert_eq!("hi\n".right_align(1), "hi\n");
+        assert_eq!("hi\n".right_align(3), " hi\n");
+        assert_eq!("hi\n".right_align(5), "   hi\n");
     }
 
     #[test]
     fn test_left_align() {
         assert_eq!("hi".left_align(), "hi");
         assert_eq!(" hi".left_align(), "hi");
+
+        assert_eq!("hi\n".left_align(), "hi\n");
+        assert_eq!(" hi\n".left_align(), "hi\n");
     }
 
     #[test]
@@ -165,10 +174,7 @@ mod tests {
         // assert_eq!("Really good dog".justify(16), "Really  good dog");
         // assert_eq!("Really good dog".justify(17), "Really  good  dog");
         // assert_eq!("Really good dog".justify(18), "Really   good  dog");
-    }
 
-    #[test]
-    fn test_justify_sentence_with_newlines() {
         assert_eq!("Good dog\n".justify(1), "Good dog\n");
         assert_eq!("Good dog\n".justify(8), "Good dog\n");
         assert_eq!("Good dog\n".justify(9), "Good  dog\n");
@@ -195,6 +201,23 @@ mod tests {
         assert_eq!(
             "Hi!    Hey?\nHello.    Bud.".dejustify(1),
             "Hi! Hey?\nHello. Bud."
+        );
+
+        assert_eq!(
+            "Hi    bud.    How    are    you?\n".dejustify(1),
+            "Hi bud. How are you?\n"
+        );
+        assert_eq!(
+            "Hi    bud.    How    are    you?\n".dejustify(2),
+            "Hi bud.  How are you?\n"
+        );
+        assert_eq!(
+            "Hi!    Hey?    Hello.    Bud.\n".dejustify(2),
+            "Hi!  Hey?  Hello.  Bud.\n"
+        );
+        assert_eq!(
+            "Hi!    Hey?\nHello.    Bud.\n".dejustify(1),
+            "Hi! Hey?\nHello. Bud.\n"
         );
     }
 }
