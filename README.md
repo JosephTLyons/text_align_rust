@@ -29,8 +29,3 @@ fn main() {
     );
 }
 ```
-
-Coming soon:
-
-- Documentation
-- Justify
