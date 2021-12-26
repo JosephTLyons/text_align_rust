@@ -222,6 +222,4 @@ mod tests {
     }
 }
 
-// May want an Align enum, and then a single align function that takes in that enum and all of the
-// lines at once, then iterates over them and doing the correct thing in a match
-// Tests with newlines at the end?
+// Clean up tests (remove redundant / unneeded ones, divide the up into more functions, etc)
