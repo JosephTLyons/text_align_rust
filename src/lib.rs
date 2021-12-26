@@ -14,12 +14,12 @@ pub trait TextAlign {
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn center_align(&self, mut width: usize, should_include_trailing_whitespace: bool) -> String {
-        let str_ref = self.as_ref();
+        let mut str_ref = self.as_ref();
         let text_length = str_ref.len();
         let has_newline = str_ref.ends_with("\n");
-        let str_ref = str_ref.trim_end();
 
         if has_newline {
+            str_ref = str_ref.trim_end();
             width += 1;
         }
 
