@@ -2,7 +2,7 @@
 
 ## December 26, 2021 - v0.1.2
 
-- Added examples in README.md
+- Added an example in README.md
 - Fixed a few typos
 
 ## December 26, 2021 - v0.1.1
