@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## December 26, 2021 - v0.1.2
+
+- Added examples in README.md
+- Fixed a few typos
+
 ## December 26, 2021 - v0.1.1
 
 - Make `TextAlign` trait public
