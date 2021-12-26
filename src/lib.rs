@@ -1,7 +1,6 @@
 mod helper_functions;
 
-use helper_functions::get_evenly_seleted_indices;
-use regex::Regex;
+use helper_functions::{get_evenly_seleted_indices, replace_matches};
 use std::fmt;
 
 pub trait TextAlign {
@@ -113,17 +112,6 @@ fn align<T: AsRef<str> + fmt::Display>(
     let padding_string = " ".repeat(padding_length);
 
     format!("{}{}", padding_string, text)
-}
-
-fn replace_matches<T: AsRef<str> + fmt::Display>(
-    text: &T,
-    regular_expression: &str,
-    replacement: &str,
-) -> String {
-    Regex::new(regular_expression)
-        .unwrap()
-        .replace_all(text.as_ref(), replacement)
-        .to_string()
 }
 
 #[cfg(test)]
