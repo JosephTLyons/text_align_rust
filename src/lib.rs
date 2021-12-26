@@ -141,6 +141,7 @@ mod tests {
 
     #[test]
     fn test_center_align_even_length_text() {
+        // Non-newline tests
         assert_eq!("hi".center_align(3, false), "hi");
         assert_eq!("hi".center_align(3, true), "hi ");
 
@@ -150,6 +151,7 @@ mod tests {
         assert_eq!("hi".center_align(8, false), "   hi");
         assert_eq!("hi".center_align(8, true), "   hi   ");
 
+        // Newline tests
         assert_eq!("hi\n".center_align(3, false), "hi\n");
         assert_eq!("hi\n".center_align(3, true), "hi \n");
 
@@ -162,6 +164,7 @@ mod tests {
 
     #[test]
     fn test_center_align_odd_length_text() {
+        // Non-newline tests
         assert_eq!("doggy".center_align(3, false), "doggy");
         assert_eq!("doggy".center_align(3, true), "doggy");
 
@@ -171,6 +174,7 @@ mod tests {
         assert_eq!("doggy".center_align(9, false), "  doggy");
         assert_eq!("doggy".center_align(9, true), "  doggy  ");
 
+        // Newline tests
         assert_eq!("doggy\n".center_align(3, false), "doggy\n");
         assert_eq!("doggy\n".center_align(3, true), "doggy\n");
 
@@ -183,10 +187,12 @@ mod tests {
 
     #[test]
     fn test_right_align() {
+        // Non-newline tests
         assert_eq!("hi".right_align(1), "hi");
         assert_eq!("hi".right_align(3), " hi");
         assert_eq!("hi".right_align(5), "   hi");
 
+        // Newline tests
         assert_eq!("hi\n".right_align(1), "hi\n");
         assert_eq!("hi\n".right_align(3), " hi\n");
         assert_eq!("hi\n".right_align(5), "   hi\n");
@@ -194,15 +200,18 @@ mod tests {
 
     #[test]
     fn test_left_align() {
+        // Non-newline tests
         assert_eq!("hi".left_align(), "hi");
         assert_eq!(" hi".left_align(), "hi");
 
+        // Newline tests
         assert_eq!("hi\n".left_align(), "hi\n");
         assert_eq!(" hi\n".left_align(), "hi\n");
     }
 
     #[test]
     fn test_justify_sentence() {
+        // Non-newline tests
         assert_eq!("Good dog".justify(1), "Good dog");
         assert_eq!("Good dog".justify(8), "Good dog");
         assert_eq!("Good dog".justify(9), "Good  dog");
@@ -211,17 +220,19 @@ mod tests {
         assert_eq!("Really good dog".justify(17), "Really  good  dog");
         assert_eq!("Really good dog".justify(18), "Really  good   dog");
 
-        // assert_eq!("Good dog\n".justify(1), "Good dog\n");
-        // assert_eq!("Good dog\n".justify(8), "Good dog\n");
-        // assert_eq!("Good dog\n".justify(9), "Good  dog\n");
-        // assert_eq!("Good dog\n".justify(10), "Good   dog\n");
-        // assert_eq!("Really good dog".justify(16), "Really  good dog");
-        // assert_eq!("Really good dog".justify(17), "Really  good  dog");
-        // assert_eq!("Really good dog".justify(18), "Really   good  dog");
+        // Newline tests
+        assert_eq!("Good dog\n".justify(1), "Good dog\n");
+        assert_eq!("Good dog\n".justify(8), "Good dog\n");
+        assert_eq!("Good dog\n".justify(9), "Good  dog\n");
+        assert_eq!("Good dog\n".justify(10), "Good   dog\n");
+        assert_eq!("Really good dog\n".justify(16), "Really good  dog\n");
+        assert_eq!("Really good dog\n".justify(17), "Really  good  dog\n");
+        assert_eq!("Really good dog\n".justify(18), "Really  good   dog\n");
     }
 
     #[test]
     fn test_dejustify() {
+        // Non-newline tests
         assert_eq!(
             "Hi    bud.    How    are    you?".dejustify(1),
             "Hi bud. How are you?"
@@ -239,6 +250,7 @@ mod tests {
             "Hi! Hey?\nHello. Bud."
         );
 
+        // Newline tests
         assert_eq!(
             "Hi    bud.    How    are    you?\n".dejustify(1),
             "Hi bud. How are you?\n"
