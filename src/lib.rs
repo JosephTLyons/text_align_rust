@@ -7,7 +7,7 @@ pub trait TextAlign {
     fn center_align(&self, width: usize) -> String;
     fn left_align(&self) -> String;
     fn right_align(&self, width: usize) -> String;
-    fn justify(&self, width: usize) -> String;
+    // fn justify(&self, width: usize) -> String;
     fn dejustify(&self, spaces_after_punctuation: usize) -> String;
 }
 
@@ -27,51 +27,51 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         align(&self, width, 1)
     }
 
-    fn justify(&self, width: usize) -> String {
-        let str_ref = self.as_ref();
+    // fn justify(&self, width: usize) -> String {
+    //     let str_ref = self.as_ref();
 
-        if width <= str_ref.len() {
-            return self.to_string();
-        }
+    //     if width <= str_ref.len() {
+    //         return self.to_string();
+    //     }
 
-        let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
-        let length_of_words: usize = words.iter().map(|word| word.len()).sum();
-        let spaces_required = width - length_of_words;
-        let space_blocks_required = words.len() - 1;
-        let spaces_per_block = spaces_required / space_blocks_required;
-        let remaining_spaces = spaces_required % space_blocks_required;
+    //     let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
+    //     let length_of_words: usize = words.iter().map(|word| word.len()).sum();
+    //     let spaces_required = width - length_of_words;
+    //     let space_blocks_required = words.len() - 1;
+    //     let spaces_per_block = spaces_required / space_blocks_required;
+    //     let remaining_spaces = spaces_required % space_blocks_required;
 
-        // dbg!(&words);
-        // dbg!(&length_of_words);
-        // dbg!(&spaces_required);
-        // dbg!(&space_blocks_required);
-        // dbg!(&spaces_per_block);
-        // dbg!(&remaining_spaces);
+    //     // dbg!(&words);
+    //     // dbg!(&length_of_words);
+    //     // dbg!(&spaces_required);
+    //     // dbg!(&space_blocks_required);
+    //     // dbg!(&spaces_per_block);
+    //     // dbg!(&remaining_spaces);
 
-        let mut space_counts = vec![spaces_per_block; space_blocks_required];
-        let indices_to_increment = get_evenly_seleted_indices(space_counts.len(), remaining_spaces);
+    //     let mut space_counts = vec![spaces_per_block; space_blocks_required];
+    //     let indices_to_increment = get_evenly_seleted_indices(space_counts.len(), remaining_spaces);
 
-        // for index in indices_to_increment {
-        //     space_counts[index] += 1
-        // }
+    //     // for index in indices_to_increment {
+    //     //     space_counts[index] += 1
+    //     // }
 
-        // We must have an equal number of words and space blocks to prevent zip() from
-        // short-circuiting
-        // We currently have 1 less space block
-        // We can push a 0 to the end, which will ultimately result in the last word having an empty
-        // string appended to it
-        space_counts.push(0);
-        assert_eq!(words.len(), space_counts.len());
+    //     // We must have an equal number of words and space blocks to prevent zip() from
+    //     // short-circuiting
+    //     // We currently have 1 less space block
+    //     // We can push a 0 to the end, which will ultimately result in the last word having an empty
+    //     // string appended to it
+    //     space_counts.push(0);
+    //     assert_eq!(words.len(), space_counts.len());
 
-        let text: String = words
-            .iter()
-            .zip(space_counts.iter())
-            .map(|(word, space_count)| format!("{}{}", word, " ".repeat(*space_count)))
-            .collect::<Vec<String>>()
-            .join("");
+    //     let text: String = words
+    //         .iter()
+    //         .zip(space_counts.iter())
+    //         .map(|(word, space_count)| format!("{}{}", word, " ".repeat(*space_count)))
+    //         .collect::<Vec<String>>()
+    //         .join("");
 
-        text
-    }
+    //     text
+    // }
 
     // TODO: Gross and probably inefficient
     fn dejustify(&self, spaces_after_punctuation: usize) -> String {
@@ -165,24 +165,24 @@ mod tests {
         assert_eq!(" hi\n".left_align(), "hi\n");
     }
 
-    #[test]
-    fn test_justify_sentence() {
-        assert_eq!("Good dog".justify(1), "Good dog");
-        assert_eq!("Good dog".justify(8), "Good dog");
-        assert_eq!("Good dog".justify(9), "Good  dog");
-        assert_eq!("Good dog".justify(10), "Good   dog");
-        // assert_eq!("Really good dog".justify(16), "Really  good dog");
-        // assert_eq!("Really good dog".justify(17), "Really  good  dog");
-        // assert_eq!("Really good dog".justify(18), "Really   good  dog");
+    // #[test]
+    // fn test_justify_sentence() {
+    //     assert_eq!("Good dog".justify(1), "Good dog");
+    //     assert_eq!("Good dog".justify(8), "Good dog");
+    //     assert_eq!("Good dog".justify(9), "Good  dog");
+    //     assert_eq!("Good dog".justify(10), "Good   dog");
+    //     // assert_eq!("Really good dog".justify(16), "Really  good dog");
+    //     // assert_eq!("Really good dog".justify(17), "Really  good  dog");
+    //     // assert_eq!("Really good dog".justify(18), "Really   good  dog");
 
-        assert_eq!("Good dog\n".justify(1), "Good dog\n");
-        assert_eq!("Good dog\n".justify(8), "Good dog\n");
-        assert_eq!("Good dog\n".justify(9), "Good  dog\n");
-        assert_eq!("Good dog\n".justify(10), "Good   dog\n");
-        // assert_eq!("Really good dog".justify(16), "Really  good dog");
-        // assert_eq!("Really good dog".justify(17), "Really  good  dog");
-        // assert_eq!("Really good dog".justify(18), "Really   good  dog");
-    }
+    //     assert_eq!("Good dog\n".justify(1), "Good dog\n");
+    //     assert_eq!("Good dog\n".justify(8), "Good dog\n");
+    //     assert_eq!("Good dog\n".justify(9), "Good  dog\n");
+    //     assert_eq!("Good dog\n".justify(10), "Good   dog\n");
+    //     // assert_eq!("Really good dog".justify(16), "Really  good dog");
+    //     // assert_eq!("Really good dog".justify(17), "Really  good  dog");
+    //     // assert_eq!("Really good dog".justify(18), "Really   good  dog");
+    // }
 
     #[test]
     fn test_dejustify() {
