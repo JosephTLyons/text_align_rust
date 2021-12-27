@@ -21,10 +21,13 @@ fn main() {
         "             Hello my dearest friend!"
     );
 
-    // justify -> Coming soon
+    assert_eq!(
+        "Hello my dearest friend!".justify(50),
+        "Hello          my          dearest         friend!"
+    );
 
     assert_eq!(
-        "Hello     my       dearest    friend!".dejustify(2),
+        "Hello          my          dearest         friend!".dejustify(2),
         "Hello my dearest friend!"
     );
 }
