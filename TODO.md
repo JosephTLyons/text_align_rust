@@ -5,3 +5,5 @@
 - Make clippy happy
 - Better description? In repo, in toml, in README
 - Potentially refactor right and center align functions?  They are pretty similar
+- Less allocations in `justify()`
+- Investigate why some `if has_newline {}` blocks increment the width and some don't
