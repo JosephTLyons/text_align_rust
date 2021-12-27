@@ -16,7 +16,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn center_align(&self, mut width: usize, should_include_trailing_whitespace: bool) -> String {
         let mut str_ref = self.as_ref();
         let text_length = str_ref.len();
-        let has_newline = str_ref.ends_with("\n");
+        let has_newline = str_ref.ends_with('\n');
 
         if has_newline {
             str_ref = str_ref.trim_end();
@@ -56,7 +56,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn right_align(&self, mut width: usize) -> String {
         let str_ref = self.as_ref();
         let text_length = str_ref.len();
-        let has_newline = str_ref.ends_with("\n");
+        let has_newline = str_ref.ends_with('\n');
 
         if has_newline {
             width += 1;
@@ -74,7 +74,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
 
     fn justify(&self, width: usize) -> String {
         let mut str_ref = self.as_ref();
-        let has_newline = str_ref.ends_with("\n");
+        let has_newline = str_ref.ends_with('\n');
 
         if has_newline {
             str_ref = str_ref.trim_end();
