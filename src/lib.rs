@@ -56,8 +56,9 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn right_align(&self, mut width: usize) -> String {
         let str_ref = self.as_ref();
         let text_length = str_ref.len();
+        let has_newline = str_ref.ends_with("\n");
 
-        if str_ref.ends_with("\n") {
+        if has_newline {
             width += 1;
         }
 
