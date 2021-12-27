@@ -1,8 +1,9 @@
 # CHANGELOG
 
-## ? ?, 2021 - v0.1.3
+## December 26, 2021 - v0.2.0
 
-- Add boolean flag to include trailing whitespace in center align
+- Added `justify()` to `TextAlign` trait
+- Added boolean flag to include trailing whitespace in center align
 
 ## December 26, 2021 - v0.1.2
 
