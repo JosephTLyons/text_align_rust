@@ -73,7 +73,12 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     }
 
     fn justify(&self, width: usize) -> String {
-        let str_ref = self.as_ref();
+        let mut str_ref = self.as_ref();
+        let has_newline = str_ref.ends_with("\n");
+
+        if has_newline {
+            str_ref = str_ref.trim_end();
+        }
 
         if width <= str_ref.len() {
             return self.to_string();
@@ -102,6 +107,8 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         space_counts.push(0);
         assert_eq!(words.len(), space_counts.len());
 
+        let last_character = if has_newline { "\n" } else { "" };
+
         let text: String = words
             .iter()
             .zip(space_counts.iter())
@@ -109,7 +116,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
             .collect::<Vec<String>>()
             .join("");
 
-        text
+        format!("{}{}", text, last_character)
     }
 
     // TODO: Gross and probably inefficient
