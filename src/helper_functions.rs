@@ -2,7 +2,7 @@ use regex::Regex;
 use std::fmt;
 
 // A modified version of: https://stackoverflow.com/a/9873804
-pub fn get_index_spread(size: usize, n: usize) -> Option<Vec<usize>> {
+pub fn get_index_spread(n: usize, size: usize) -> Option<Vec<usize>> {
     if size == 0 || n == 0 {
         return None;
     }
@@ -39,13 +39,13 @@ mod tests {
 
     #[test]
     fn test_get_index_spread_special_cases() {
-        let output = get_index_spread(1, 0);
-        assert_eq!(output, None);
-
         let output = get_index_spread(0, 1);
         assert_eq!(output, None);
 
-        let output = get_index_spread(8, 100);
+        let output = get_index_spread(1, 0);
+        assert_eq!(output, None);
+
+        let output = get_index_spread(100, 8);
         assert_eq!(output.unwrap(), [0, 1, 2, 3, 4, 5, 6, 7]);
     }
 
@@ -61,25 +61,25 @@ mod tests {
         // 7 -> [|, |, |, |, |, |, |, o]
         // 8 -> [|, |, |, |, |, |, |, |]
 
-        let output = get_index_spread(8, 1);
+        let output = get_index_spread(1, 8);
         assert_eq!(output.unwrap(), [4]);
 
-        let output = get_index_spread(8, 2);
+        let output = get_index_spread(2, 8);
         assert_eq!(output.unwrap(), [2, 6]);
 
-        let output = get_index_spread(8, 3);
+        let output = get_index_spread(3, 8);
         assert_eq!(output.unwrap(), [1, 3, 6]);
 
-        let output = get_index_spread(8, 4);
+        let output = get_index_spread(4, 8);
         assert_eq!(output.unwrap(), [1, 3, 5, 7]);
 
-        let output = get_index_spread(8, 5);
+        let output = get_index_spread(5, 8);
         assert_eq!(output.unwrap(), [0, 1, 3, 4, 6]);
 
-        let output = get_index_spread(8, 6);
+        let output = get_index_spread(6, 8);
         assert_eq!(output.unwrap(), [0, 1, 2, 4, 5, 6]);
 
-        let output = get_index_spread(8, 7);
+        let output = get_index_spread(7, 8);
         assert_eq!(output.unwrap(), [0, 1, 2, 3, 4, 5, 6]);
 
         let output = get_index_spread(8, 8);
@@ -95,16 +95,16 @@ mod tests {
         // 4 -> [|, |, |, |, o]
         // 5 -> [|, |, |, |, |]
 
-        let output = get_index_spread(5, 1);
+        let output = get_index_spread(1, 5);
         assert_eq!(output.unwrap(), [2]);
 
-        let output = get_index_spread(5, 2);
+        let output = get_index_spread(2, 5);
         assert_eq!(output.unwrap(), [1, 3]);
 
-        let output = get_index_spread(5, 3);
+        let output = get_index_spread(3, 5);
         assert_eq!(output.unwrap(), [0, 1, 3]);
 
-        let output = get_index_spread(5, 4);
+        let output = get_index_spread(4, 5);
         assert_eq!(output.unwrap(), [0, 1, 2, 3]);
 
         let output = get_index_spread(5, 5);

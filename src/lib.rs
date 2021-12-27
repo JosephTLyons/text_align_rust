@@ -93,7 +93,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
 
         let mut space_counts = vec![spaces_per_block; space_blocks_required];
 
-        if let Some(indices) = get_index_spread(space_counts.len(), remaining_spaces) {
+        if let Some(indices) = get_index_spread(remaining_spaces, space_counts.len()) {
             for index in indices {
                 space_counts[index] += 1
             }
