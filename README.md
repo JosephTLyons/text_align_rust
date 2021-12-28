@@ -7,7 +7,7 @@ use text_align::TextAlign;
 
 fn main() {
     assert_eq!(
-        "          Hello my dearest friend!".left_align(),
+        "                          Hello my dearest friend!".left_align(),
         "Hello my dearest friend!"
     );
 
