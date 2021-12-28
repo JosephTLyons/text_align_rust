@@ -4,7 +4,7 @@ use std::fmt;
 // A modified version of: https://stackoverflow.com/a/9873804
 pub fn get_index_spread(n: usize, size: usize) -> Option<Vec<usize>> {
     // TODO: Should either or both of these cases be an error?
-    if size == 0 || n == 0 {
+    if n == 0 || size == 0 {
         return None;
     }
 
