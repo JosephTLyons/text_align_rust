@@ -32,6 +32,7 @@
 mod helper_functions;
 
 use helper_functions::{get_index_spread, replace_matches};
+use itertools::Itertools;
 use std::fmt;
 
 pub trait TextAlign {
@@ -130,20 +131,18 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
             }
         }
 
-        // We must have an equal number of words and space blocks to prevent zip() from
-        // short-circuiting
-        // We currently have 1 less space block
-        // We can push a 0 to the end, which will ultimately result in the last word having an empty
-        // string appended to it
-        space_counts.push(0);
-        assert_eq!(words.len(), space_counts.len());
-
         let last_character = if has_newline { "\n" } else { "" };
 
         let text: String = words
             .iter()
-            .zip(space_counts.iter())
-            .map(|(word, space_count)| format!("{}{}", word, " ".repeat(*space_count)))
+            .zip_longest(space_counts.iter())
+            .map(|either_or_both| match either_or_both {
+                itertools::EitherOrBoth::Both(word, space_count) => {
+                    format!("{}{}", word, " ".repeat(*space_count))
+                }
+                itertools::EitherOrBoth::Left(word) => word.to_string(),
+                itertools::EitherOrBoth::Right(_) => unreachable!(),
+            })
             .collect::<Vec<String>>()
             .join("");
 
