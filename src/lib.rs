@@ -1,3 +1,34 @@
+//! ```
+//! use text_align::TextAlign;
+//!
+//! fn main() {
+//!     assert_eq!(
+//!         "          Hello my dearest friend!".left_align(),
+//!         "Hello my dearest friend!"
+//!     );
+//!
+//!     assert_eq!(
+//!         "Hello my dearest friend!".right_align(50),
+//!         "                          Hello my dearest friend!"
+//!     );
+//!
+//!     assert_eq!(
+//!         "Hello my dearest friend!".center_align(50, false),
+//!         "             Hello my dearest friend!"
+//!     );
+//!
+//!     assert_eq!(
+//!         "Hello my dearest friend!".justify(50),
+//!         "Hello          my          dearest         friend!"
+//!     );
+//!
+//!     assert_eq!(
+//!         "Hello          my          dearest         friend!".dejustify(2),
+//!         "Hello my dearest friend!"
+//!     );
+//! }
+//! ```
+
 mod helper_functions;
 
 use helper_functions::{get_index_spread, replace_matches};
