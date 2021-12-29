@@ -31,6 +31,12 @@ mod helper_functions;
 use helper_functions::{get_index_spread, replace_matches};
 use std::fmt;
 
+enum AlignmentType {
+    Center,
+    Left,
+    Right,
+}
+
 pub trait TextAlign {
     fn center_align(&self, width: usize) -> String;
     fn left_align(&self, width: usize) -> String;
@@ -41,72 +47,16 @@ pub trait TextAlign {
 
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
-    fn center_align(&self, mut width: usize) -> String {
-        let mut str_ref = self.as_ref().trim_start();
-        let has_newline = str_ref.ends_with('\n');
-        let text_length = str_ref.len();
-        str_ref = str_ref.trim_end();
-
-        if has_newline {
-            width += 1;
-        }
-
-        if width <= text_length {
-            return self.to_string();
-        }
-
-        let spaces = width - text_length;
-        let left_padding_length = spaces / 2;
-        let right_padding_length = spaces - left_padding_length;
-        let last_character = if has_newline { "\n" } else { "" };
-
-        format!(
-            "{}{}{}{}",
-            " ".repeat(left_padding_length),
-            str_ref,
-            " ".repeat(right_padding_length),
-            last_character
-        )
+    fn center_align(&self, width: usize) -> String {
+        align(self, width, AlignmentType::Center)
     }
 
-    fn left_align(&self, mut width: usize) -> String {
-        let mut str_ref = self.as_ref().trim_start();
-        let has_newline = str_ref.ends_with('\n');
-        let text_length = str_ref.len();
-        str_ref = str_ref.trim_end();
-
-        if has_newline {
-            width += 1;
-        }
-
-        if width <= text_length {
-            return self.to_string();
-        }
-
-        let padding_length = width - text_length;
-        let last_character = if has_newline { "\n" } else { "" };
-
-        format!("{}{}{}", str_ref, " ".repeat(padding_length), last_character)
+    fn left_align(&self, width: usize) -> String {
+        align(self, width, AlignmentType::Left)
     }
 
-    fn right_align(&self, mut width: usize) -> String {
-        let mut str_ref = self.as_ref().trim_start();
-        let has_newline = str_ref.ends_with('\n');
-        let text_length = str_ref.len();
-        str_ref = str_ref.trim_end();
-
-        if has_newline {
-            width += 1;
-        }
-
-        if width <= text_length {
-            return self.to_string();
-        }
-
-        let padding_length = width - text_length;
-        let last_character = if has_newline { "\n" } else { "" };
-
-        format!("{}{}{}", " ".repeat(padding_length), str_ref, last_character)
+    fn right_align(&self, width: usize) -> String {
+        align(self, width, AlignmentType::Right)
     }
 
     fn justify(&self, width: usize) -> String {
@@ -177,6 +127,49 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         }
 
         text
+    }
+}
+
+fn align<T: AsRef<str> + fmt::Display>(
+    text: T,
+    mut width: usize,
+    alignment_type: AlignmentType,
+) -> String {
+    let mut str_ref = text.as_ref().trim_start();
+    let has_newline = str_ref.ends_with('\n');
+    let text_length = str_ref.len();
+    str_ref = str_ref.trim_end();
+
+    if has_newline {
+        width += 1;
+    }
+
+    if width <= text_length {
+        return text.to_string();
+    }
+
+    let spaces = width - text_length;
+    let last_character = if has_newline { "\n" } else { "" };
+
+    match alignment_type {
+        AlignmentType::Center => {
+            let left_padding_length = spaces / 2;
+            let right_padding_length = spaces - left_padding_length;
+
+            format!(
+                "{}{}{}{}",
+                " ".repeat(left_padding_length),
+                str_ref,
+                " ".repeat(right_padding_length),
+                last_character
+            )
+        }
+        AlignmentType::Left => {
+            format!("{}{}{}", str_ref, " ".repeat(spaces), last_character)
+        }
+        AlignmentType::Right => {
+            format!("{}{}{}", " ".repeat(spaces), str_ref, last_character)
+        }
     }
 }
 
