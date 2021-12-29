@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## December 28, 2021 - v0.3.0
+
+**Note:** Breaking changes
+
+- Small API cleanup
+- Center aligning will always pad the right side with spaces
+- Left aligning will always pad the right side with spaces
+- Code cleanup
+
 ## December 26, 2021 - v0.2.0
 
 - Added `justify()` to `TextAlign` trait
