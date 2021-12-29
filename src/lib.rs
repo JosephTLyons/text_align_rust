@@ -39,8 +39,11 @@ enum AlignmentType {
 
 pub trait TextAlign {
     fn center_align(&self, width: usize) -> String;
+    fn center_align_with_fill_character(&self, width: usize, fill_character: char) -> String;
     fn left_align(&self, width: usize) -> String;
+    fn left_align_with_fill_character(&self, width: usize, fill_character: char) -> String;
     fn right_align(&self, width: usize) -> String;
+    fn right_align_with_fill_character(&self, width: usize, fill_character: char) -> String;
     fn justify(&self, width: usize) -> String;
     fn dejustify(&self, spaces_after_punctuation: usize) -> String;
 }
@@ -48,15 +51,27 @@ pub trait TextAlign {
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn center_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Center)
+        align(self, width, ' ', AlignmentType::Center)
     }
 
     fn left_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Left)
+        align(self, width, ' ', AlignmentType::Left)
     }
 
     fn right_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Right)
+        align(self, width, ' ', AlignmentType::Right)
+    }
+
+    fn center_align_with_fill_character(&self, width: usize, fill_character: char) -> String {
+        align(self, width, fill_character, AlignmentType::Center)
+    }
+
+    fn left_align_with_fill_character(&self, width: usize, fill_character: char) -> String {
+        align(self, width, fill_character, AlignmentType::Left)
+    }
+
+    fn right_align_with_fill_character(&self, width: usize, fill_character: char) -> String {
+        align(self, width, fill_character, AlignmentType::Right)
     }
 
     fn justify(&self, width: usize) -> String {
@@ -133,6 +148,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
 fn align<T: AsRef<str> + fmt::Display>(
     text: T,
     mut width: usize,
+    fill_character: char,
     alignment_type: AlignmentType,
 ) -> String {
     let mut str_ref = text.as_ref().trim_start();
@@ -150,6 +166,7 @@ fn align<T: AsRef<str> + fmt::Display>(
 
     let spaces = width - text_length;
     let last_character = if has_newline { "\n" } else { "" };
+    let fill_character_string = fill_character.to_string();
 
     match alignment_type {
         AlignmentType::Center => {
@@ -158,17 +175,27 @@ fn align<T: AsRef<str> + fmt::Display>(
 
             format!(
                 "{}{}{}{}",
-                " ".repeat(left_padding_length),
+                fill_character_string.repeat(left_padding_length),
                 str_ref,
-                " ".repeat(right_padding_length),
+                fill_character_string.repeat(right_padding_length),
                 last_character
             )
         }
         AlignmentType::Left => {
-            format!("{}{}{}", str_ref, " ".repeat(spaces), last_character)
+            format!(
+                "{}{}{}",
+                str_ref,
+                fill_character_string.repeat(spaces),
+                last_character
+            )
         }
         AlignmentType::Right => {
-            format!("{}{}{}", " ".repeat(spaces), str_ref, last_character)
+            format!(
+                "{}{}{}",
+                fill_character_string.repeat(spaces),
+                str_ref,
+                last_character
+            )
         }
     }
 }
@@ -289,3 +316,9 @@ mod tests {
         );
     }
 }
+
+
+// TODO:
+// Implement for Justify and Dejustify
+// Add tests
+// Add to README.md example and doc test at top
