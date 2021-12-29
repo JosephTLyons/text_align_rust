@@ -67,12 +67,12 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
             str_ref = str_ref.trim_end();
         }
 
-        if width <= str_ref.len() {
+        if width <= str_ref.chars().count() {
             return self.to_string();
         }
 
         let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
-        let length_of_words: usize = words.iter().map(|word| word.len()).sum();
+        let length_of_words: usize = words.iter().map(|word| word.chars().count()).sum();
         let spaces_required = width - length_of_words;
         let space_blocks_required = words.len() - 1;
         let spaces_per_block = spaces_required / space_blocks_required;
@@ -137,7 +137,7 @@ fn align<T: AsRef<str> + fmt::Display>(
 ) -> String {
     let mut str_ref = text.as_ref().trim_start();
     let has_newline = str_ref.ends_with('\n');
-    let text_length = str_ref.len();
+    let text_length = str_ref.chars().count();
     str_ref = str_ref.trim_end();
 
     if has_newline {
