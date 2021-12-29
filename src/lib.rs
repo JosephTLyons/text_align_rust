@@ -43,8 +43,8 @@ pub trait TextAlign {
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn center_align(&self, mut width: usize) -> String {
         let mut str_ref = self.as_ref().trim_start();
-        let text_length = str_ref.len();
         let has_newline = str_ref.ends_with('\n');
+        let text_length = str_ref.len();
         str_ref = str_ref.trim_end();
 
         if has_newline {
