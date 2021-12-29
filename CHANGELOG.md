@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## December 29, 2021 - v0.3.1
+
+- Fixed bug in how length of strings were calculated
+
 ## December 28, 2021 - v0.3.0
 
 **Note:** Breaking changes
