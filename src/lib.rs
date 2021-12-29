@@ -11,8 +11,8 @@
 //! );
 //!
 //! assert_eq!(
-//!     "Hello my dearest friend!".center_align(50, false),
-//!     "             Hello my dearest friend!"
+//!     "Hello my dearest friend!".center_align(50),
+//!     "             Hello my dearest friend!             "
 //! );
 //!
 //! assert_eq!(
@@ -32,7 +32,7 @@ use helper_functions::{get_index_spread, replace_matches};
 use std::fmt;
 
 pub trait TextAlign {
-    fn center_align(&self, width: usize, should_include_trailing_whitespace: bool) -> String;
+    fn center_align(&self, width: usize) -> String;
     fn left_align(&self) -> String;
     fn right_align(&self, width: usize) -> String;
     fn justify(&self, width: usize) -> String;
@@ -41,7 +41,7 @@ pub trait TextAlign {
 
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
-    fn center_align(&self, mut width: usize, should_include_trailing_whitespace: bool) -> String {
+    fn center_align(&self, mut width: usize) -> String {
         let mut str_ref = self.as_ref();
         let text_length = str_ref.len();
         let has_newline = str_ref.ends_with('\n');
@@ -57,13 +57,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
 
         let spaces = width - text_length;
         let left_padding_length = spaces / 2;
-
-        let right_padding_length = if should_include_trailing_whitespace {
-            spaces - left_padding_length
-        } else {
-            0
-        };
-
+        let right_padding_length = spaces - left_padding_length;
         let last_character = if has_newline { "\n" } else { "" };
 
         format!(
@@ -178,47 +172,27 @@ mod tests {
     #[test]
     fn test_center_align_even_length_text() {
         // Non-newline tests
-        assert_eq!("hi".center_align(3, false), "hi");
-        assert_eq!("hi".center_align(3, true), "hi ");
-
-        assert_eq!("hi".center_align(5, false), " hi");
-        assert_eq!("hi".center_align(5, true), " hi  ");
-
-        assert_eq!("hi".center_align(8, false), "   hi");
-        assert_eq!("hi".center_align(8, true), "   hi   ");
+        assert_eq!("hi".center_align(3), "hi ");
+        assert_eq!("hi".center_align(5), " hi  ");
+        assert_eq!("hi".center_align(8), "   hi   ");
 
         // Newline tests
-        assert_eq!("hi\n".center_align(3, false), "hi\n");
-        assert_eq!("hi\n".center_align(3, true), "hi \n");
-
-        assert_eq!("hi\n".center_align(5, false), " hi\n");
-        assert_eq!("hi\n".center_align(5, true), " hi  \n");
-
-        assert_eq!("hi\n".center_align(8, false), "   hi\n");
-        assert_eq!("hi\n".center_align(8, true), "   hi   \n");
+        assert_eq!("hi\n".center_align(3), "hi \n");
+        assert_eq!("hi\n".center_align(5), " hi  \n");
+        assert_eq!("hi\n".center_align(8), "   hi   \n");
     }
 
     #[test]
     fn test_center_align_odd_length_text() {
         // Non-newline tests
-        assert_eq!("doggy".center_align(3, false), "doggy");
-        assert_eq!("doggy".center_align(3, true), "doggy");
-
-        assert_eq!("doggy".center_align(8, false), " doggy");
-        assert_eq!("doggy".center_align(8, true), " doggy  ");
-
-        assert_eq!("doggy".center_align(9, false), "  doggy");
-        assert_eq!("doggy".center_align(9, true), "  doggy  ");
+        assert_eq!("doggy".center_align(3), "doggy");
+        assert_eq!("doggy".center_align(8), " doggy  ");
+        assert_eq!("doggy".center_align(9), "  doggy  ");
 
         // Newline tests
-        assert_eq!("doggy\n".center_align(3, false), "doggy\n");
-        assert_eq!("doggy\n".center_align(3, true), "doggy\n");
-
-        assert_eq!("doggy\n".center_align(8, false), " doggy\n");
-        assert_eq!("doggy\n".center_align(8, true), " doggy  \n");
-
-        assert_eq!("doggy\n".center_align(9, false), "  doggy\n");
-        assert_eq!("doggy\n".center_align(9, true), "  doggy  \n");
+        assert_eq!("doggy\n".center_align(3), "doggy\n");
+        assert_eq!("doggy\n".center_align(8), " doggy  \n");
+        assert_eq!("doggy\n".center_align(9), "  doggy  \n");
     }
 
     #[test]
