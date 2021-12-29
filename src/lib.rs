@@ -1,8 +1,8 @@
 //! ```
 //! use text_align::TextAlign;
 //! assert_eq!(
-//!     "                          Hello my dearest friend!".left_align(),
-//!     "Hello my dearest friend!"
+//!     "                          Hello my dearest friend!".left_align(50),
+//!     "Hello my dearest friend!                          "
 //! );
 //!
 //! assert_eq!(
@@ -33,7 +33,7 @@ use std::fmt;
 
 pub trait TextAlign {
     fn center_align(&self, width: usize) -> String;
-    fn left_align(&self) -> String;
+    fn left_align(&self, width: usize) -> String;
     fn right_align(&self, width: usize) -> String;
     fn justify(&self, width: usize) -> String;
     fn dejustify(&self, spaces_after_punctuation: usize) -> String;
@@ -69,10 +69,24 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         )
     }
 
-    // Because left alignment will only ever shorten the length of a line, we dont need to worry
-    // about staying within a width, so we don't even consider it
-    fn left_align(&self) -> String {
-        self.as_ref().trim_start().to_string()
+    fn left_align(&self, mut width: usize) -> String {
+        let mut str_ref = self.as_ref().trim_start();
+        let has_newline = str_ref.ends_with('\n');
+        let text_length = str_ref.len();
+
+        if has_newline {
+            str_ref = str_ref.trim_end();
+            width += 1;
+        }
+
+        if width <= text_length {
+            return self.to_string();
+        }
+
+        let padding_length = width - text_length;
+        let last_character = if has_newline { "\n" } else { "" };
+
+        format!("{}{}{}", str_ref, " ".repeat(padding_length), last_character)
     }
 
     fn right_align(&self, mut width: usize) -> String {
@@ -211,12 +225,14 @@ mod tests {
     #[test]
     fn test_left_align() {
         // Non-newline tests
-        assert_eq!("hi".left_align(), "hi");
-        assert_eq!(" hi".left_align(), "hi");
+        assert_eq!("hi".left_align(1), "hi");
+        assert_eq!("hi".left_align(3), "hi ");
+        assert_eq!(" hi".left_align(5), "hi   ");
 
         // Newline tests
-        assert_eq!("hi\n".left_align(), "hi\n");
-        assert_eq!(" hi\n".left_align(), "hi\n");
+        assert_eq!("hi\n".left_align(1), "hi\n");
+        assert_eq!(" hi\n".left_align(3), "hi \n");
+        assert_eq!(" hi\n".left_align(5), "hi   \n");
     }
 
     #[test]
