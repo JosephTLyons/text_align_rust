@@ -1,6 +1,6 @@
 [package]
 name = "text_align"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Joseph T Lyons <JosephTLyons@gmail.com>"]
 edition = "2021"
 description = "A crate that provides a single trait for various alignments of text"
