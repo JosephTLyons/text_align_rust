@@ -42,12 +42,12 @@ pub trait TextAlign {
 // TODO: Any way to make this return either `&str` or `String`?
 impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     fn center_align(&self, mut width: usize) -> String {
-        let mut str_ref = self.as_ref();
+        let mut str_ref = self.as_ref().trim_start();
         let text_length = str_ref.len();
         let has_newline = str_ref.ends_with('\n');
+        str_ref = str_ref.trim_end();
 
         if has_newline {
-            str_ref = str_ref.trim_end();
             width += 1;
         }
 
@@ -73,9 +73,9 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         let mut str_ref = self.as_ref().trim_start();
         let has_newline = str_ref.ends_with('\n');
         let text_length = str_ref.len();
+        str_ref = str_ref.trim_end();
 
         if has_newline {
-            str_ref = str_ref.trim_end();
             width += 1;
         }
 
@@ -90,9 +90,10 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     }
 
     fn right_align(&self, mut width: usize) -> String {
-        let str_ref = self.as_ref();
-        let text_length = str_ref.len();
+        let mut str_ref = self.as_ref().trim_start();
         let has_newline = str_ref.ends_with('\n');
+        let text_length = str_ref.len();
+        str_ref = str_ref.trim_end();
 
         if has_newline {
             width += 1;
@@ -103,9 +104,9 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         }
 
         let padding_length = width - text_length;
-        let padding_string = " ".repeat(padding_length);
+        let last_character = if has_newline { "\n" } else { "" };
 
-        format!("{}{}", padding_string, self)
+        format!("{}{}{}", " ".repeat(padding_length), str_ref, last_character)
     }
 
     fn justify(&self, width: usize) -> String {
