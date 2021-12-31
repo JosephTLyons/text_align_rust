@@ -30,6 +30,7 @@ mod helper_functions;
 
 use helper_functions::{get_index_spread, replace_matches};
 use std::fmt;
+use unicode_segmentation::UnicodeSegmentation;
 
 enum AlignmentType {
     Center,
@@ -67,12 +68,14 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
             str_ref = str_ref.trim_end();
         }
 
-        if width <= str_ref.chars().count() {
+        let text_length = str_ref.graphemes(true).count();
+
+        if width <= text_length {
             return self.to_string();
         }
 
         let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
-        let length_of_words: usize = words.iter().map(|word| word.chars().count()).sum();
+        let length_of_words: usize = words.iter().map(|word| word.graphemes(true).count()).sum();
         let spaces_required = width - length_of_words;
         let space_blocks_required = words.len() - 1;
         let spaces_per_block = spaces_required / space_blocks_required;
@@ -137,7 +140,7 @@ fn align<T: AsRef<str> + fmt::Display>(
 ) -> String {
     let mut str_ref = text.as_ref().trim_start();
     let has_newline = str_ref.ends_with('\n');
-    let text_length = str_ref.chars().count();
+    let text_length = str_ref.graphemes(true).count();
     str_ref = str_ref.trim_end();
 
     if has_newline {
@@ -248,6 +251,12 @@ mod tests {
         assert_eq!("Really good dog\n".justify(16), "Really good  dog\n");
         assert_eq!("Really good dog\n".justify(17), "Really  good  dog\n");
         assert_eq!("Really good dog\n".justify(18), "Really  good   dog\n");
+
+        // Unicode tests
+        assert_eq!(
+            "Marco Polo,[10] based on the kingdom of Goryeo (Hangul: 고려; Hanja: 高麗;\n".justify(80),
+            "Marco  Polo,[10]  based  on  the  kingdom  of  Goryeo  (Hangul:  고려;  Hanja: 高麗;\n"
+        );
     }
 
     #[test]

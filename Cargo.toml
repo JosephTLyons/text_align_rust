@@ -11,3 +11,4 @@ repository = "https://github.com/JosephTLyons/text_align_rust"
 
 [dependencies]
 regex = "1.5.4"
+unicode-segmentation = "1.8.0"
