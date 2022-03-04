@@ -1,5 +1,4 @@
 use regex::Regex;
-use std::fmt;
 
 // A modified version of: https://stackoverflow.com/a/9873804
 pub fn get_index_spread(n: usize, size: usize) -> Option<Vec<usize>> {
@@ -24,7 +23,7 @@ pub fn get_index_spread(n: usize, size: usize) -> Option<Vec<usize>> {
     Some(indices)
 }
 
-pub fn replace_matches<T: AsRef<str> + fmt::Display>(
+pub fn replace_matches<T: AsRef<str>>(
     text: &T,
     regular_expression: &str,
     replacement: &str,

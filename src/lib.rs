@@ -29,7 +29,6 @@
 mod helper_functions;
 
 use helper_functions::{get_index_spread, replace_matches};
-use std::fmt;
 
 enum AlignmentType {
     Center,
@@ -46,17 +45,17 @@ pub trait TextAlign {
 }
 
 // TODO: Any way to make this return either `&str` or `String`?
-impl<T: AsRef<str> + fmt::Display> TextAlign for T {
+impl<T: AsRef<str>> TextAlign for T {
     fn center_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Center)
+        align(self.as_ref(), width, AlignmentType::Center)
     }
 
     fn left_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Left)
+        align(self.as_ref(), width, AlignmentType::Left)
     }
 
     fn right_align(&self, width: usize) -> String {
-        align(self, width, AlignmentType::Right)
+        align(self.as_ref(), width, AlignmentType::Right)
     }
 
     fn justify(&self, width: usize) -> String {
@@ -68,7 +67,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
         }
 
         if width <= str_ref.chars().count() {
-            return self.to_string();
+            return self.as_ref().to_string();
         }
 
         let words: Vec<&str> = str_ref.split_ascii_whitespace().collect();
@@ -109,7 +108,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     // TODO: Gross and probably inefficient
     fn dejustify(&self, spaces_after_punctuation: usize) -> String {
         // Normalize all space groupings in between words to a single space
-        let mut text = replace_matches(&self, "[' ']{2,}", " ");
+        let mut text = replace_matches(&self.as_ref(), "[' ']{2,}", " ");
 
         if spaces_after_punctuation > 1 {
             let padding_string = " ".repeat(spaces_after_punctuation);
@@ -130,11 +129,7 @@ impl<T: AsRef<str> + fmt::Display> TextAlign for T {
     }
 }
 
-fn align<T: AsRef<str> + fmt::Display>(
-    text: T,
-    mut width: usize,
-    alignment_type: AlignmentType,
-) -> String {
+fn align<T: AsRef<str>>(text: T, mut width: usize, alignment_type: AlignmentType) -> String {
     let mut str_ref = text.as_ref().trim_start();
     let has_newline = str_ref.ends_with('\n');
     let text_length = str_ref.chars().count();
@@ -145,7 +140,7 @@ fn align<T: AsRef<str> + fmt::Display>(
     }
 
     if width <= text_length {
-        return text.to_string();
+        return text.as_ref().to_string();
     }
 
     let spaces = width - text_length;
