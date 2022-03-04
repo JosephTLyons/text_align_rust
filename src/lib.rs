@@ -172,6 +172,12 @@ fn align<T: AsRef<str>>(text: T, mut width: usize, alignment_type: AlignmentType
 mod tests {
     use super::*;
 
+    // Just a simple test to ensure `String`s work, in addition to `&str`s
+    #[test]
+    fn test_to_string() {
+        assert_eq!("hi".to_string().center_align(4), " hi ");
+    }
+
     #[test]
     fn test_center_align_even_length_text() {
         // Non-newline tests
